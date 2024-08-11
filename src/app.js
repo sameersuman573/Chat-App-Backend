@@ -8,6 +8,7 @@ import { asyncHandler } from "./utils/asyncHandler.utils.js";
 import jwt from 'jsonwebtoken';
 import { User } from "./models/User.model.js";
 import { ApiError } from "./utils/apiError.utils.js";
+import { corsOption } from "./config.js";
 
 // import {createSingleChats , createGroupchats , createMessage , createMessageInChat} from "./seeders/chat.seed.js"
 
@@ -26,7 +27,7 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
     // origin: process.env.CORS_ORIGIN,
-    origin: "http://localhost:5173", // Replace with your frontend URL
+    origin: "https://chat-app-frontend-nine-wine.vercel.app", // Replace with your frontend URL
 
     credentials: true,
   },
@@ -36,7 +37,7 @@ app.set("io", io); // using set method to mount the `io` instance on the app to 
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // Replace with your frontend URL
+    origin: "https://chat-app-frontend-nine-wine.vercel.app", // Replace with your frontend URL
     credentials: true,
   }),
 );

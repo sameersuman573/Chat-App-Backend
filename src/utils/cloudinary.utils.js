@@ -25,7 +25,6 @@ const uploadfile = async (localfilepath) => {
 
     const res = await cloudinary.uploader.upload(localfilepath, {
       resource_type: "raw",
- 
     });
 
     console.log("file is uploaded successfull ", res.url);

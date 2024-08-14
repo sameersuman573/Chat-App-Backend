@@ -25,21 +25,16 @@ const app = express();
 const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
-  cors: {
+  cors: corsOption,
     // origin: process.env.CORS_ORIGIN,
-    origin: "https://chat-app-frontend-nine-wine.vercel.app", // Replace with your frontend URL
-
-    credentials: true,
-  },
+    // origin: "https://chat-app-frontend-nine-wine.vercel.app", // Replace with your frontend URL
+    // credentials: true,
+  
 });
 
 app.set("io", io); // using set method to mount the `io` instance on the app to avoid usage of `global`
 
-app.use(
-  cors({
-    origin: "https://chat-app-frontend-nine-wine.vercel.app", // Replace with your frontend URL
-    credentials: true,
-  }),
+app.use(cors(cors(corsOption)),
 );
 
 // Data fetching configuration

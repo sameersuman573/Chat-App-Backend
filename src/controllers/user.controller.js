@@ -86,9 +86,31 @@ const register = asyncHandler(async (req, res) => {
       throw new ApiError(400, "User not found");
     }
 
+    const {accessToken , refreshToken} = await GenerateAccessAndRefreshToken(createduser._id);
+    
+    const options = {
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: "none",
+      httpOnly: true,
+      secure: true,
+    };
+
+
+    res.cookie("accessToken", accessToken, options);
+    res.cookie("refreshToken", refreshToken, {
+      ...options,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    }); // 7 days for refresh token
+
+
+
     return res
       .status(201)
-      .json(new ApiResponse(201, "User registered successfully", createduser));
+      .json(new ApiResponse(201, {
+        createduser,
+        accessToken,
+        refreshToken
+      } ,"User registered successfully"));
   } catch (error) {
     throw new ApiError(400, "Failed to register user", error);
   }
@@ -144,7 +166,6 @@ const Login = asyncHandler(async (req, res) => {
       sameSite: "none",
       httpOnly: true,
       secure: true,
-     
     };
 
     res.cookie("accessToken", accessToken, options);

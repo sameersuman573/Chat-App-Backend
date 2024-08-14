@@ -34,8 +34,7 @@ const io = new Server(httpServer, {
 
 app.set("io", io); // using set method to mount the `io` instance on the app to avoid usage of `global`
 
-app.use(cors(cors(corsOption)),
-);
+app.use(cors(corsOption))
 
 // Data fetching configuration
 app.use(express.json({ limit: "20kb" }));

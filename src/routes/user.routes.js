@@ -12,5 +12,5 @@ const router = Router();
 router.route("/register").post(upload.single("avatar"), register);
 router.route("/login").post(Login)
 router.route("/Currentuser").get(verifyJWT,GetCurrentUser )
-router.route("/logout").get(verifyJWT,Logout)
+router.route("/logout").post(verifyJWT,Logout)
 export default router;

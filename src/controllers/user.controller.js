@@ -5,6 +5,8 @@ import { asyncHandler } from "../utils/asyncHandler.utils.js";
 import { ApiResponse } from "../utils/apiResponse.utils.js";
 import { ApiError } from "../utils/apiError.utils.js";
 import { uploadfile } from "../utils/cloudinary.utils.js";
+// Models
+import { Account } from "../models/Account.model.js";
 
 const GenerateAccessAndRefreshToken = async (userID) => {
   try {
@@ -78,6 +80,13 @@ const register = asyncHandler(async (req, res) => {
       avatar: avatarUrl.url,
     });
 
+    // Create associated account Entry with a dedicated amount of money
+    const userID = user._id;
+    const account = await Account.create({
+      userID,
+      balance: 1 + Math.random() * 10000,
+    });
+
     const createduser = await User.findById(user._id).select(
       "-password -refreshToken",
     );
@@ -86,8 +95,10 @@ const register = asyncHandler(async (req, res) => {
       throw new ApiError(400, "User not found");
     }
 
-    const {accessToken , refreshToken} = await GenerateAccessAndRefreshToken(createduser._id);
-    
+    const { accessToken, refreshToken } = await GenerateAccessAndRefreshToken(
+      createduser._id,
+    );
+
     const options = {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       sameSite: "none",
@@ -95,22 +106,23 @@ const register = asyncHandler(async (req, res) => {
       secure: true,
     };
 
-
     res.cookie("accessToken", accessToken, options);
     res.cookie("refreshToken", refreshToken, {
       ...options,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     }); // 7 days for refresh token
 
-
-
-    return res
-      .status(201)
-      .json(new ApiResponse(201, {
-        createduser,
-        accessToken,
-        refreshToken
-      } ,"User registered successfully"));
+    return res.status(201).json(
+      new ApiResponse(
+        201,
+        {
+          createduser,
+          accessToken,
+          refreshToken,
+        },
+        "User registered successfully",
+      ),
+    );
   } catch (error) {
     throw new ApiError(400, "Failed to register user", error);
   }
@@ -207,28 +219,32 @@ const GetCurrentUser = asyncHandler(async (req, res) => {
 });
 
 const Logout = asyncHandler(async (req, res) => {
-  const user = req.user._id;
-
-  const finduser = await User.findByIdAndUpdate(
-    user,
-    {
-      $set: { refreshToken: undefined },
-    },
-    {
-      new: true,
-    },
-  );
-
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
-
-  return res
-    .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "User logged out successfully"));
+  try {
+    const user = req.user._id;
+  
+    const finduser = await User.findByIdAndUpdate(
+      user,
+      {
+        $set: { refreshToken: undefined },
+      },
+      {
+        new: true,
+      },
+    );
+  
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+  
+    return res
+      .status(200)
+      .clearCookie("accessToken", options)
+      .clearCookie("refreshToken", options)
+      .json(new ApiResponse(200, {}, "User logged out successfully"));
+  } catch (error) {
+    return res.status(500).json(new ApiResponse(500, {}, "Error logging out"));
+  }
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {

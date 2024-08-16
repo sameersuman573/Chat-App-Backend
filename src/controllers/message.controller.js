@@ -6,6 +6,7 @@ import { Chat } from "../models/Chat.model.js";
 import { uploadfile } from "../utils/cloudinary.utils.js";
 import { User } from "../models/User.model.js";
 import { emitSocketEvent } from "../Socket/index.js";
+import { Account } from "../models/Account.model.js";
 import {
   ALERT,
   REFETCH_CHATS,
@@ -68,6 +69,12 @@ const SendMessage = asyncHandler(async (req, res, next) => {
   }
   const UserID = user._id;
 
+  const account = await Account.findOne({userID : user._id})
+
+  if( !account){
+    throw new ApiError(404 , "Account doesnot exists ")
+  }
+
   const { chatId } = req.params;
   
   const { message } = req.body;
@@ -118,6 +125,16 @@ const SendMessage = asyncHandler(async (req, res, next) => {
 
   // Create the new message
   const NewMessage = await Messages.create(newMessageData);
+
+  // Increment the balance to 1 coin for every message
+  const amount = 1;
+
+  const IncrementBalance = await Account.updateOne(
+    { userID: user },
+    { $inc: { balance: amount } }
+    )
+
+    console.log("IncrementBalance" , IncrementBalance);
 
   // Update the chat with the last message ID
   const chat = await Chat.findByIdAndUpdate(
@@ -182,6 +199,20 @@ const SendMessage = asyncHandler(async (req, res, next) => {
     .status(200)
     .json(new ApiResponse(200, { AttachmentUrl}, "Message sent successfully"));
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 const SendAttachmentOnly = asyncHandler(async (req, res, next) => {

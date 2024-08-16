@@ -26,15 +26,22 @@ const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
   cors: corsOption,
-    // origin: process.env.CORS_ORIGIN,
-    // origin: "https://chat-app-frontend-nine-wine.vercel.app", // Replace with your frontend URL
-    // credentials: true,
-  
+
+  // {
+  //   origin:"http://localhost:5173",
+  //   credentials: true,
+  //   // origin: "https://chat-app-frontend-nine-wine.vercel.app", // Replace with your frontend URL
+  // }
 });
 
 app.set("io", io); // using set method to mount the `io` instance on the app to avoid usage of `global`
 
 app.use(cors(corsOption))
+
+// app.use(cors({
+//   origin:"http://localhost:5173",
+//   credentials:true,
+// })) 
 
 // Data fetching configuration
 app.use(express.json({ limit: "20kb" }));
@@ -84,12 +91,14 @@ import chatRouter from "./routes/chat.routes.js";
 import messageRouter from "./routes/Message.routes.js";
 import notificationRouter from "./routes/notification.routes.js";
 import adminRouter from "./routes/Admin.routes.js";
+import accountRouter from "./routes/Account.routes.js";
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/chat", chatRouter);
 app.use("/api/v1/message", messageRouter);
 app.use("/api/v1/notif", notificationRouter );
 app.use("/api/v1/Admin", adminRouter )
+app.use("/api/v1/account", accountRouter);
 
 // step 1 -io.on will setup an event Listner for new client connections to the server
 

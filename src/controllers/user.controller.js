@@ -65,11 +65,14 @@ const register = asyncHandler(async (req, res) => {
   try {
     avatarUrl = await uploadfile(avatarLocalPath);
   } catch (error) {
+    console.error("Error uploading file:", error);
+
     if (avatarUrl && avatarUrl.public_id) {
       await deleteUploadedFile(avatarUrl.public_id); // Implemented delete logic as per Cloudinary API
     }
     throw new ApiError(400, "Failed to upload the avatar");
   }
+
 
   try {
     const user = await User.create({
@@ -77,7 +80,7 @@ const register = asyncHandler(async (req, res) => {
       email,
       password,
       fullname,
-      avatar: avatarUrl.url,
+      avatar: avatarUrl?.url,
     });
 
     // Create associated account Entry with a dedicated amount of money

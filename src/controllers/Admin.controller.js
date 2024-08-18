@@ -23,8 +23,10 @@ const adminLogin = asyncHandler(async (req, res) => {
   }
 
   const options = {
+     maxAge: 7 * 24 * 60 * 60 * 1000,
+    sameSite: "none",
     httpOnly: true,
-    // secure: true,
+    secure: true,
   };
 
   const token = jwt.sign(secretKey, process.env.JWT_SECRET);

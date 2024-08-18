@@ -48,7 +48,7 @@ const register = asyncHandler(async (req, res) => {
 
   const avatarLocalPath = req.file?.path;
 
-  // console.log('req.file:', req.file);
+  console.log('req.file:', req.file);
 
   if (!req.file) {
     console.log("No files found in the request.");

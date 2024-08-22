@@ -123,8 +123,8 @@ const initializeSocketIO = (io) => {
             throw new ApiError(404, "Chat not found")
           }
 
- 
-           const messageForRealTime = {
+          
+const messageForRealTime = {
             message: message,
             _id: uuid(),
             sender: {

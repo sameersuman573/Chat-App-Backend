@@ -25,6 +25,7 @@ const app = express();
 const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
+  // io is an instance of new server created with httpServer
   cors: corsOption,
 
   // {
@@ -35,6 +36,7 @@ const io = new Server(httpServer, {
 });
 
 app.set("io", io); // using set method to mount the `io` instance on the app to avoid usage of `global`
+// io is an instance of new server created with httpServer
 
 app.use(cors(corsOption))
 
@@ -73,7 +75,7 @@ app.use((req, res, next) => {
   next();
 });
 
-  
+
 
 
 

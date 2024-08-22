@@ -749,6 +749,7 @@ const AssignAdmin = asyncHandler(async (req, res) => {
   const payload = chatAggregation[0];
 
   emitSocketEvent(req,existingMembers , ALERT, payload);
+  emitSocketEvent(req,existingMembers , REFETCH_CHATS, payload);
 
   return res
     .status(200)
